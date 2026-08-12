@@ -31,4 +31,4 @@ Durante el desarrollo de este sprint trabajamos con las bases del desarrollo web
 3. **Generación Dinámica de Tarjetas:** Crea una tarjeta organizada por cada clase agendada con un contador en tiempo real de la cantidad de clases programadas.
 4. **Interacción de Tareas:** Incluye casillas para marcar clases como completadas y botones funcionales para cancelar.
 
----
+
