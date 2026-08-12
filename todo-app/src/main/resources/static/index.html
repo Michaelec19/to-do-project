@@ -10,7 +10,7 @@
 </head>
 <body id="lanhua-trainer-view">
 
-  <nav id="lanhua-navbar" class="navbar navbar-dark bg-dark mb-4 p-3">
+  <nav id="lanhua-navbar" class="navbar navbar-dark bg-dark mb-2 p-3">
     <div class="container-fluid d-flex justify-content-between align-items-center">
       <h1 class="navbar-brand h5 m-0 d-flex align-items-center gap-2 fw-bold">
         <div class="d-inline-flex align-items-center justify-content-center rounded-circle border border-warning bg-white overflow-hidden" style="width: 50px; height: 50px;">
@@ -31,14 +31,14 @@
       <aside class="col-md-4">
         <div id="lanhua-form-card" class="card shadow-sm border-0">
           <div class="card-body">
-            <h2 class="h5 fw-bold mb-4">Programar Sesión Extra</h2>
+            <h2 class="h5 fw-bold mb-3">Programar Sesiónes</h2>
 
             <div id="lanhua-form-alert" class="alert alert-danger d-none py-2 fs-6" role="alert">
               <i class="fa-solid fa-triangle-exclamation me-1"></i> <span id="lanhua-alert-text">Por favor completa todos los campos requeridos.</span>
             </div>
             
             <form id="lanhua-schedule-form">
-              <div class="mb-3">
+              <div class="mb-2">
                 <label for="lanhua-discipline-select" class="form-label fw-semibold">Tipo de Práctica</label>
                 <select id="lanhua-discipline-select" class="form-select">
                   <option selected disabled value="">Seleccionar disciplina...</option>
@@ -49,7 +49,7 @@
                 </select>
               </div>
 
-              <div class="mb-3">
+              <div class="mb-2">
                 <label for="lanhua-level-select" class="form-label fw-semibold">Nivel</label>
                 <select id="lanhua-level-select" class="form-select">
                   <option selected disabled value="">Seleccionar nivel...</option>
@@ -59,7 +59,7 @@
                 </select>
               </div>
 
-              <div class="mb-3">
+              <div class="mb-2">
                 <label for="lanhua-location-select" class="form-label fw-semibold">Sede / Ubicación</label>
                 <select id="lanhua-location-select" class="form-select">
                   <option selected disabled value="">Seleccionar sede...</option>
@@ -69,7 +69,7 @@
                 </select>
               </div>
 
-              <div class="row g-2 mb-3">
+              <div class="row g-2 mb-2">
                 <div class="col-6">
                   <label for="lanhua-date-input" class="form-label fw-semibold">Fecha</label>
                   <input type="date" id="lanhua-date-input" class="form-control">
@@ -80,15 +80,18 @@
                 </div>
               </div>
 
-              <div class="mb-3">
+              <div class="mb-2">
                 <label for="lanhua-notes-input" class="form-label fw-semibold">Observaciones</label>
                 <textarea id="lanhua-notes-input" class="form-control" rows="3" placeholder="Agrega notas u observaciones de la clase..."></textarea>
               </div>
 
-              <div class="form-check form-switch mb-4 d-flex align-items-center gap-2">
-                <input class="form-check-input mt-0" type="checkbox" role="switch" id="lanhua-type-toggle">
+              <div class="form-check form-switch mb-3 d-flex align-items-center gap-2">
+                <div class="form-check-label fw-semibold text-warning" for="lanhua-type-toggle">
+                  <i class="fa-solid fa-user"></i> Personalizada
+                </div>
+                <input class="form-check-input mt-0 m-0" type="checkbox" role="switch" id="lanhua-type-toggle">
                 <label class="form-check-label fw-semibold text-warning" for="lanhua-type-toggle">
-                  <i class="fa-solid fa-users"></i> Personalizada o grupal
+                  <i class="fa-solid fa-users"></i> Grupal
                 </label>
               </div>
 
