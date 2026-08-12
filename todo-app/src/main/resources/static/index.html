@@ -13,7 +13,10 @@
   <nav id="lanhua-navbar" class="navbar navbar-dark bg-dark mb-4 p-3">
     <div class="container-fluid d-flex justify-content-between align-items-center">
       <h1 class="navbar-brand h5 m-0 d-flex align-items-center gap-2 fw-bold">
-        <i class="fa-solid fa-user-ninja text-warning"></i> Club Deportivo LanHua
+        <div class="d-inline-flex align-items-center justify-content-center rounded-circle border border-warning bg-white overflow-hidden" style="width: 50px; height: 50px;">
+          <img src="./img/Logo.jpeg" alt="Logo LanHua" style="width: 100%; height: 100%; object-fit: contain;">
+        </div>
+         Club Deportivo LanHua
       </h1>
       <div class="d-flex align-items-center gap-3 text-white">
         <span class="fs-6">Vista: Entrenador (Wushu/Kung fu)</span>
@@ -29,6 +32,10 @@
         <div id="lanhua-form-card" class="card shadow-sm border-0">
           <div class="card-body">
             <h2 class="h5 fw-bold mb-4">Programar Sesión Extra</h2>
+
+            <div id="lanhua-form-alert" class="alert alert-danger d-none py-2 fs-6" role="alert">
+              <i class="fa-solid fa-triangle-exclamation me-1"></i> <span id="lanhua-alert-text">Por favor completa todos los campos requeridos.</span>
+            </div>
             
             <form id="lanhua-schedule-form">
               <div class="mb-3">
