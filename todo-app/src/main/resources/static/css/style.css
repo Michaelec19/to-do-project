@@ -1,0 +1,75 @@
+:root {
+  --lanhua-red: #BF2A37;
+  --lanhua-yellow: #F2BE22;
+  --lanhua-orange: #F29B30;
+  --lanhua-gray-light: #E3E3E3;
+  --lanhua-black: #0D0D0D;
+}
+
+body {
+  background-color: #F8F9FA;
+  color: var(--lanhua-black);
+  font-family: sans-serif;
+}
+
+#lanhua-navbar {
+  background-color: var(--lanhua-black) !important;
+  border-bottom: 3px solid var(--lanhua-yellow);
+}
+
+#lanhua-alert {
+  background-color: #FFF9E6;
+  border: 1px solid var(--lanhua-yellow);
+  color: var(--lanhua-black);
+}
+
+#lanhua-form-card {
+  background-color: #FFFFFF;
+  border-radius: 8px;
+}
+
+#lanhua-submit-btn {
+  background-color: var(--lanhua-red);
+  color: white;
+  transition: background-color 0.2s ease;
+}
+
+#lanhua-submit-btn:hover {
+  background-color: #9e212c;
+  color: white;
+}
+
+.lanhua-task-card {
+  background-color: var(--lanhua-gray-light);
+  border-radius: 8px;
+  border-left: 5px solid transparent !important;
+}
+
+.lanhua-checkbox {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--lanhua-black);
+  border-radius: 50% !important;
+  cursor: pointer;
+}
+
+.lanhua-checkbox:checked {
+  background-color: var(--lanhua-orange);
+  border-color: var(--lanhua-orange);
+}
+
+.lanhua-time-badge {
+  background-color: var(--lanhua-yellow);
+  color: var(--lanhua-black);
+}
+
+.lanhua-btn-primary {
+  background-color: var(--lanhua-orange);
+  color: white;
+  border: none;
+}
+
+.lanhua-btn-primary:hover {
+  background-color: #d98a2a;
+  color: white;
+}
