@@ -21,6 +21,20 @@ class TaskManager {
     this.save();
   }
 
+  updateTask(taskId, discipline, level, location, date, time, notes, modality) {
+    const task = this.tasks.find(t => t.id === taskId);
+    if (task) {
+      task.discipline = discipline;
+      task.level = level;
+      task.location = location;
+      task.date = date;
+      task.time = time;
+      task.notes = notes;
+      task.modality = modality;
+      this.save();
+    }
+  }
+
   updateTaskStatus(taskId, newStatus) {
     const task = this.tasks.find(t => t.id === taskId);
     if (task) {
@@ -59,13 +73,26 @@ class TaskManager {
     
     lanhuaClassList.innerHTML = '';
 
+    const timeCountMap = {};
+    this.tasks.forEach(task => {
+      const key = `${task.date}_${task.time}`;
+      timeCountMap[key] = (timeCountMap[key] || 0) + 1;
+    });
+
+    
+
     this.tasks.forEach(task => {
       const article = document.createElement('article');
-      article.className = 'lanhua-task-card card border-0 shadow-sm';
+      const key = `${task.date}_${task.time}`;
+      const hasConflict = timeCountMap[key] > 1;
+
+      article.className = hasConflict 
+        ? 'lanhua-task-card card border border-danger border-2 shadow-sm bg-light' 
+        : 'lanhua-task-card card border-0 shadow-sm';
     
       const isChecked = task.status === 'DONE' ? 'checked' : '';
       const titleClass = task.status === 'DONE' ? 'text-decoration-line-through text-muted' : '';
-
+      const conflictBadge = hasConflict ? `<span class="badge bg-danger">¡Conflicto de Horario!</span>` : '';
       article.innerHTML = `
         <div class="card-body d-flex justify-content-between align-items-center">
           <div class="d-flex align-items-start gap-3">
@@ -77,6 +104,7 @@ class TaskManager {
                 </span>
                 <span class="badge bg-secondary">${task.level}</span>
                 <span class="badge bg-warning text-dark"><i class="fa-solid fa-users"></i> ${task.modality}</span>
+                ${conflictBadge}
               </div>
               <h3 class="h5 fw-bold mb-1 ${titleClass}">${task.discipline}</h3>
               <p class="mb-1 text-muted fs-6">${task.notes}</p>
@@ -84,8 +112,8 @@ class TaskManager {
             </div>
           </div>
           <div class="lanhua-card-actions d-flex flex-column gap-2 justify-content-start">
-            <button class="btn lanhua-btn-primary btn-sm px-3 fw-semibold">
-              <i class="fa-solid fa-list-check"></i> Asistencia
+            <button class="btn btn-outline-primary btn-sm px-3 fw-semibold lanhua-edit-btn">
+              <i class="fa-solid fa-pen"></i> Editar
             </button>
             <button class="btn btn-outline-dark btn-sm px-3 lanhua-delete-btn">
               <i class="fa-regular fa-circle-xmark"></i> Cancelar
@@ -99,6 +127,11 @@ class TaskManager {
         const newStatus = e.target.checked ? 'DONE' : 'PENDING';
         this.updateTaskStatus(task.id, newStatus);
         this.render();
+      });
+
+      const editBtn = article.querySelector('.lanhua-edit-btn');
+      editBtn.addEventListener('click', () => {
+        window.loadTaskForEdit(task.id);
       });
 
       const deleteBtn = article.querySelector('.lanhua-delete-btn');
