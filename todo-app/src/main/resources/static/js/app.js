@@ -1,8 +1,14 @@
+const taskManager = new TaskManager();
+taskManager.load();
+taskManager.render();
+
 const lanhuaScheduleForm = document.getElementById('lanhua-schedule-form');
-const lanhuaClassList = document.getElementById('lanhua-class-list');
-const lanhuaClassCount = document.getElementById('lanhua-class-count');
 const lanhuaFormAlert = document.getElementById('lanhua-form-alert');
-let currentClassCount = 0;
+const lanhuaAlertText = document.getElementById('lanhua-alert-text');
+const submitBtn = document.getElementById('lanhua-submit-btn');
+
+let isEditing = false;
+let editingTaskId = null;
 
 function validFormFieldInput(data) {
   if (!data.discipline || data.discipline === "") return false;
@@ -12,6 +18,49 @@ function validFormFieldInput(data) {
   if (!data.time || data.time === "") return false;
   return true;
 }
+
+function validateDate(dateStr, timeStr) {
+  const selectedDateTime = new Date(`${dateStr}T${timeStr}`);
+  const now = new Date();
+  return selectedDateTime >= now;
+}
+
+window.loadTaskForEdit = function(taskId) {
+  const task = taskManager.tasks.find(t => t.id === taskId);
+  if (!task) return;
+
+  const disciplineSelect = document.getElementById('lanhua-discipline-select');
+  for (let i = 0; i < disciplineSelect.options.length; i++) {
+    if (disciplineSelect.options[i].text === task.discipline) {
+      disciplineSelect.selectedIndex = i;
+      break;
+    }
+  }
+  const levelSelect = document.getElementById('lanhua-level-select');
+  for (let i = 0; i < levelSelect.options.length; i++) {
+    if (levelSelect.options[i].text === task.level) {
+      levelSelect.selectedIndex = i;
+      break;
+    }
+  }
+  const locationSelect = document.getElementById('lanhua-location-select');
+  for (let i = 0; i < locationSelect.options.length; i++) {
+    if (locationSelect.options[i].text === task.location) {
+      locationSelect.selectedIndex = i;
+      break;
+    }
+  }
+  document.getElementById('lanhua-date-input').value = task.date;
+  document.getElementById('lanhua-time-input').value = task.time;
+  document.getElementById('lanhua-notes-input').value = task.notes;
+
+  const toggle = document.getElementById('lanhua-type-toggle');
+  toggle.checked = task.modality === "Grupal";
+
+  isEditing = true;
+  editingTaskId = taskId;
+  submitBtn.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Actualizar Sesión`;
+};
 
 lanhuaScheduleForm.addEventListener('submit', (e) => {
   e.preventDefault();
@@ -28,66 +77,57 @@ lanhuaScheduleForm.addEventListener('submit', (e) => {
   const isCustomOrGroup = document.getElementById('lanhua-type-toggle').checked;
   const modalityText = isCustomOrGroup ? "Grupal" : "Personalizada" ;
 
-  const formData = {
+  const validationData = {
     discipline: disciplineSelect.value,
     level: levelSelect.value,
     location: locationSelect.value,
     date: document.getElementById('lanhua-date-input').value,
-    time: document.getElementById('lanhua-time-input').value,
-    notes: document.getElementById('lanhua-notes-input').value
+    time: document.getElementById('lanhua-time-input').value
   };
-  const isValid = validFormFieldInput(formData);
+  
 
-  if (!isValid) {
+  if (!validFormFieldInput(validationData)) {
+    lanhuaAlertText.textContent = "Por favor completa todos los campos requeridos.";
+    lanhuaFormAlert.classList.remove('d-none');
+    return;
+  }
+
+  if (!validateDate(validationData.date, validationData.time)) {
+    lanhuaAlertText.textContent = "No se puede programar una clase en una fecha u hora pasada.";
     lanhuaFormAlert.classList.remove('d-none');
     return;
   }
 
   lanhuaFormAlert.classList.add('d-none');
 
-  const article = document.createElement('article');
-  article.className = 'lanhua-task-card card border-0 shadow-sm';
-  
-  article.innerHTML = `
-    <div class="card-body d-flex justify-content-between align-items-center">
-      <div class="d-flex align-items-start gap-3">
-        <input class="form-check-input lanhua-checkbox mt-1" type="checkbox" aria-label="Completar clase">
-        <div class="lanhua-card-info">
-          <div class="d-flex align-items-center gap-3 mb-2">
-            <span class="badge lanhua-time-badge text-dark fs-6">
-              <i class="fa-regular fa-clock"></i> ${formData.date} | ${formData.time}
-            </span>
-            <span class="badge bg-secondary">${levelText}</span>
-            <span class="badge bg-warning text-dark"><i class="fa-solid fa-users"></i> ${modalityText}</span>
-          </div>
-          <h3 class="h5 fw-bold mb-1">${disciplineText}</h3>
-          <p class="mb-1 text-muted fs-6">${formData.notes}</p>
-          <p class="mb-0 text-secondary fs-6"><i class="fa-solid fa-location-dot"></i> ${locationText}</p>
-        </div>
-      </div>
-      <div class="lanhua-card-actions d-flex flex-column gap-2 justify-content-start">
-        <button class="btn lanhua-btn-primary btn-sm px-3 fw-semibold">
-          <i class="fa-solid fa-list-check"></i> Asistencia
-        </button>
-        <button class="btn btn-outline-dark btn-sm px-3 lanhua-delete-btn">
-          <i class="fa-regular fa-circle-xmark"></i> Cancelar
-        </button>
-      </div>
-    </div>
-  `;
+  if (isEditing) {
+    taskManager.updateTask(
+      editingTaskId,
+      disciplineText,
+      levelText,
+      locationText,
+      validationData.date,
+      validationData.time,
+      document.getElementById('lanhua-notes-input').value,
+      modalityText
+    );
+    isEditing = false;
+    editingTaskId = null;
+    submitBtn.innerHTML = `<i class="fa-solid fa-calendar-plus"></i> Agendar Sesión`;
+  } else {
+    taskManager.addTask(
+      disciplineText,
+      levelText,
+      locationText,
+      validationData.date,
+      validationData.time,
+      document.getElementById('lanhua-notes-input').value,
+      modalityText
+    );
+  }
 
-  const deleteBtn = article.querySelector('.lanhua-delete-btn');
-  deleteBtn.addEventListener('click', () => {
-    article.remove();
-    updateClassCount(-1);
-  });
-
-  lanhuaClassList.appendChild(article);
-  updateClassCount(1);
+  taskManager.render();
   lanhuaScheduleForm.reset();
 });
 
-function updateClassCount(change) {
-  currentClassCount += change;
-  lanhuaClassCount.textContent = `${currentClassCount} clases programadas`;
-}
+  
