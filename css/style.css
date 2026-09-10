@@ -2,57 +2,94 @@
 
 :root {
   --secondary-color: #ffc107;
+  --bg-dark: #212529;
+  --bg-card: #1a1d20;
 }
 
 body {
   font-family: 'Inter', sans-serif;
-  background-color: #f8f9fa;
+  background-color: var(--bg-dark);
   color: #f8f9fa;
+  -webkit-font-smoothing: antialiased;
 }
 
+.mobile-wrapper {
+  max-width: 480px;
+  margin: 0 auto;
+  background-color: var(--bg-dark);
+  min-height: 100vh;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
 
-.bg-card-custom {
-  background-color: #1a1d20 !important;
-  border: 1px solid var(--secondary-color) !important;
+.date-selector-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 12px;
+  padding-bottom: 10px;
+  scrollbar-width: none;
+}
+.date-selector-container::-webkit-scrollbar {
+  display: none;
+}
+
+.date-card {
+  min-width: 65px;
+  height: 85px;
+  border-radius: 16px;
+  background-color: var(--bg-card);
+  border: 1px solid #343a40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #adb5bd;
+}
+
+.date-card.active {
+  background-color: var(--secondary-color);
+  color: #000;
+  border-color: var(--secondary-color);
+  font-weight: bold;
+}
+
+.lanhua-task-card {
+  background-color: var(--bg-card);
+  border: none;
+  border-left: 5px solid var(--secondary-color) !important;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.lanhua-task-card:active {
+  transform: scale(0.98);
+}
+
+.lanhua-task-card.conflict-card {
+  background-color: #4a1919 !important;
+  border-left: 5px solid #dc3545 !important;
 }
 
 .form-control, .form-select {
   background-color: #2b3035;
   border-color: #495057;
   color: #f8f9fa;
+  border-radius: 10px;
 }
 
 .form-control:focus, .form-select:focus {
   background-color: #2b3035;
   color: #f8f9fa;
   border-color: var(--secondary-color);
-  box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+  box-shadow: none;
 }
 
-.lanhua-task-card {
-  background-color: #212529;
+.modal-content {
+  background-color: var(--bg-card);
   border: 1px solid #343a40;
-  border-left: 4px solid var(--secondary-color) !important;
-  transition: transform 0.2s ease, background-color 0.2s ease;
-  color: #f8f9fa;
-}
-
-.lanhua-task-card:hover {
-  transform: translateX(5px);
-  background-color: #2b3035;
-}
-
-.lanhua-task-card.conflict-card {
-  background-color: #4a1919 !important;
-  border-left: 4px solid #dc3545 !important;
-}
-
-.lanhua-task-card.conflict-card:hover {
-  background-color: #5c1f1f !important;
-}
-
-.lanhua-task-card .text-muted {
-  color: #adb5bd !important;
+  border-radius: 20px;
 }
 
 .form-check-input {
@@ -66,6 +103,78 @@ body {
   border-color: var(--secondary-color);
 }
 
-#lanhua-schedule-form .form-label {
-  color: #f8f9fa !important;
+.text-done-light {
+  color: #212529 !important;
+  text-decoration: line-through;
+}
+
+body.light-mode {
+  --bg-dark: #f8f9fa;
+  --bg-card: #ffffff;
+}
+
+body.light-mode .text-white {
+  color: #212529 !important;
+}
+
+body.light-mode .btn-close-white {
+  filter: invert(1) grayscale(100%) brightness(0);
+}
+
+body.light-mode .lanhua-task-card {
+  border: 1px solid #dee2e6;
+}
+
+body.light-mode .form-control,
+body.light-mode .form-select {
+  background-color: #ffffff;
+  border-color: #ced4da;
+  color: #212529 !important;
+}
+
+body.light-mode .title-app-login {
+  color: #212529 !important;
+}
+
+body.light-mode #btnLoginThemeToggle {
+  color: #212529 !important;
+  border-color: #212529 !important;
+}
+
+body.light-mode #btnLoginThemeToggle:hover {
+  background-color: #212529 !important;
+  color: #ffffff !important;
+}
+
+.auth-tabs .nav-link {
+  color: #adb5bd !important;
+  background-color: transparent !important;
+  border-radius: 0 !important;
+  border-bottom: 2px solid transparent !important;
+  transition: all 0.3s ease;
+  padding-bottom: 10px;
+}
+
+.auth-tabs .nav-link:hover {
+  color: #f2be22 !important;
+}
+
+.auth-tabs .nav-link.active {
+  color: #f2be22 !important;
+  border-bottom: 2px solid #f2be22 !important;
+  background-color: transparent !important;
+}
+
+#loginForm button[type="submit"],
+#registerForm button[type="submit"] {
+  background-color: #f2be22 !important;
+  color: #0d0d0d !important;
+  border: none !important;
+  transition: background-color 0.2s ease;
+}
+
+#loginForm button[type="submit"]:hover,
+#registerForm button[type="submit"]:hover {
+  background-color: #d9aa1e !important;
+  color: #0d0d0d !important;
 }

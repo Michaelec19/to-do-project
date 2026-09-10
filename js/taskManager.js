@@ -4,7 +4,7 @@ class TaskManager {
         this.currentId = currentId;
     }
 
-    addTask(discipline, level, location, date, startTime, endTime, notes, modality) {
+    addTask(discipline, level, location, date, startTime, endTime, notes, modality, remind) {
         const task = {
             id: this.currentId++,
             discipline: discipline,
@@ -15,14 +15,14 @@ class TaskManager {
             endTime: endTime,
             notes: notes,
             modality: modality,
+            remind: remind,
             status: 'PENDING'
         };
-
         this.tasks.push(task);
         this.save();
     }
 
-    updateTask(taskId, discipline, level, location, date, startTime, endTime, notes, modality) {
+    updateTask(taskId, discipline, level, location, date, startTime, endTime, notes, modality, remind) {
         const task = this.tasks.find(t => t.id === taskId);
         if (task) {
             task.discipline = discipline;
@@ -33,6 +33,7 @@ class TaskManager {
             task.endTime = endTime;
             task.notes = notes;
             task.modality = modality;
+            task.remind = remind;
             this.save();
         }
     }
@@ -68,97 +69,64 @@ class TaskManager {
         }
     }
 
-    render() {
+    render(selectedDateString) {
         const lanhuaClassList = document.getElementById('lanhua-class-list');
-        const lanhuaClassCount = document.getElementById('lanhua-class-count');
         lanhuaClassList.innerHTML = '';
 
         this.tasks.forEach(task => task.hasConflict = false);
 
-        for (let i = 0; i < this.tasks.length; i++) {
-            for (let j = i + 1; j < this.tasks.length; j++) {
-                const t1 = this.tasks[i];
-                const t2 = this.tasks[j];
-                if (t1.date === t2.date) {
-                    if (t1.startTime < t2.endTime && t1.endTime > t2.startTime) {
-                        t1.hasConflict = true;
-                        t2.hasConflict = true;
-                    }
+        const dailyTasks = this.tasks.filter(t => t.date === selectedDateString);
+
+        for (let i = 0; i < dailyTasks.length; i++) {
+            for (let j = i + 1; j < dailyTasks.length; j++) {
+                const t1 = dailyTasks[i];
+                const t2 = dailyTasks[j];
+                if (t1.startTime < t2.endTime && t1.endTime > t2.startTime) {
+                    t1.hasConflict = true;
+                    t2.hasConflict = true;
                 }
             }
         }
 
-        const getLevelBadgeClass = (level) => {
-            const l = level.toLowerCase();
-            if (l.includes('principiante') || l.includes('beginner')) return 'bg-white text-dark';
-            if (l.includes('intermedio') || l.includes('intermediate')) return 'bg-warning text-dark';
-            if (l.includes('avanzado') || l.includes('advanced')) return 'bg-danger text-white';
-            return 'bg-secondary';
-        };
+        if (dailyTasks.length === 0) {
+            lanhuaClassList.innerHTML = `<p class="text-center text-muted mt-5">No hay clases para este día.</p>`;
+            return;
+        }
 
-        this.tasks.forEach(task => {
+        dailyTasks.forEach(task => {
             const article = document.createElement('article');
             article.className = task.hasConflict
-                ? 'lanhua-task-card card shadow-sm rounded-3 conflict-card'
-                : 'lanhua-task-card card shadow-sm rounded-3';
+                ? 'lanhua-task-card p-3 mb-3 conflict-card'
+                : 'lanhua-task-card p-3 mb-3';
 
             const isChecked = task.status === 'DONE' ? 'checked' : '';
-            const titleClass = task.status === 'DONE' ? 'text-decoration-line-through text-secondary' : 'text-white';
+            const titleClass = task.status === 'DONE' ? 'text-done-light' : 'text-white';
 
             article.innerHTML = `
-                <div class="card-body p-3 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
-                  <div class="d-flex align-items-start gap-3 w-100">
-                    <input class="form-check-input mt-1 border-secondary" type="checkbox" aria-label="Completar clase" ${isChecked} style="background-color: transparent;">
-                    
-                    <div class="w-100">
-                      <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                        <span class="badge bg-warning text-dark fs-6">
-                          <i class="fa-regular fa-clock"></i> ${task.date} | ${task.startTime} - ${task.endTime}
-                        </span>
-                        <span class="badge ${getLevelBadgeClass(task.level)}">${task.level}</span>
-                        <span class="badge border border-secondary text-light"><i class="fa-solid fa-users text-warning"></i> ${task.modality}</span>
-                      </div>
-                      
-                      <h3 class="h5 fw-bold mb-1 ${titleClass}">${task.discipline}</h3>
-                      <p class="mb-1 text-muted small">${task.notes || 'Sin observaciones'}</p>
-                      <p class="mb-0 text-light opacity-75 small"><i class="fa-solid fa-location-dot text-warning"></i> ${task.location}</p>
-                    </div>
-                  </div>
-        
-                  <div class="d-flex flex-row flex-sm-column gap-2 justify-content-start w-100" style="max-width: 130px;">
-                    <button class="btn btn-outline-warning btn-sm w-100 lanhua-edit-btn">
-                      <i class="fa-solid fa-pen"></i> Editar
-                    </button>
-                    <button class="btn btn-outline-danger btn-sm w-100 lanhua-delete-btn border-0">
-                      <i class="fa-regular fa-trash-can"></i> Cancelar
-                    </button>
-                  </div>
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h3 class="h5 fw-bold mb-0 ${titleClass}">${task.discipline}</h3>
+                    <input class="form-check-input mt-0 border-secondary lanhua-checkbox" type="checkbox" ${isChecked}>
                 </div>
-              `;
+                <div class="text-warning small fw-bold mb-1">
+                    <i class="fa-regular fa-clock me-1"></i> ${task.startTime} - ${task.endTime}
+                </div>
+                <p class="text-light opacity-75 small mb-2 ${titleClass}"><i class="fa-solid fa-location-dot text-warning me-1"></i> Sede: ${task.location}</p>
+                <p class="small mb-0 text-truncate ${titleClass}">${task.notes || 'Sin observaciones'}</p>
+            `;
 
-
-
-            const checkbox = article.querySelector('.form-check-input');
-            checkbox.addEventListener('change', (e) => {
-                const newStatus = e.target.checked ? 'DONE' : 'PENDING';
-                this.updateTaskStatus(task.id, newStatus);
-                this.render();
-            });
-
-            const editBtn = article.querySelector('.lanhua-edit-btn');
-            editBtn.addEventListener('click', () => {
+            article.addEventListener('click', (e) => {
+                if(e.target.classList.contains('lanhua-checkbox')) return;
                 window.loadTaskForEdit(task.id);
             });
 
-            const deleteBtn = article.querySelector('.lanhua-delete-btn');
-            deleteBtn.addEventListener('click', () => {
-                this.deleteTask(task.id);
-                this.render();
+            const checkbox = article.querySelector('.lanhua-checkbox');
+            checkbox.addEventListener('change', (e) => {
+                const newStatus = e.target.checked ? 'DONE' : 'PENDING';
+                this.updateTaskStatus(task.id, newStatus);
+                this.render(selectedDateString);
             });
 
             lanhuaClassList.appendChild(article);
         });
-
-        lanhuaClassCount.textContent = `${this.tasks.length} clases programadas`;
     }
 }

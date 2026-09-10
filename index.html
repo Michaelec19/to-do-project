@@ -2,122 +2,164 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trainer Schedule - Lan Hua</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>App Mobile - Lan Hua</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="./css/style.css">
 </head>
-<body id="lanhua-trainer-view" class="d-flex flex-column min-vh-100">
+<body>
 
-<nav id="lanhua-navbar" class="navbar navbar-dark bg-dark mb-4 p-3 shadow-sm border-bottom border-secondary">
-  <div class="container-fluid d-flex justify-content-between align-items-center">
-    <h1 class="navbar-brand h5 m-0 d-flex align-items-center gap-2 fw-bold">
-      <div class="d-inline-flex align-items-center justify-content-center rounded-circle border border-warning bg-white overflow-hidden" style="width: 40px; height: 40px;">
-        <img src="./img/Logo.jpeg" alt="Logo LanHua" style="width: 100%; height: 100%; object-fit: contain;">
+<div class="mobile-wrapper d-flex flex-column pt-4 px-3">
+
+  <header class="mb-4 d-flex flex-column gap-3">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <img src="./img/Logo.jpeg" alt="Logo LanHua" class="rounded-circle border border-warning bg-white object-fit-contain shadow-sm" style="width: 45px; height: 45px; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#settingsModal">
+        <span class="badge bg-danger text-white fs-6 shadow-sm rounded-pill px-3 py-2" id="user-name-display">Entrenador</span>
       </div>
-      LAN HUA AGENDA
-    </h1>
-    <div class="d-flex align-items-center gap-3 text-white">
-      <span class="fs-6 text-warning">Mi Agenda Entrenador</span>
+      <button class="btn btn-outline-info rounded-pill btn-sm fw-bold px-3 shadow-sm d-flex align-items-center gap-1" id="btn-sync">
+        <i class="fa-solid fa-rotate"></i> Sincronizar
+      </button>
     </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-2">
+      <div>
+        <h2 class="h6 fw-normal text-white mb-0" id="header-full-date">Cargando...</h2>
+        <h1 class="h2 fw-bold m-0 text-white" id="header-today-text">Hoy</h1>
+      </div>
+      <button class="btn btn-warning rounded-pill px-4 py-2 fw-bold shadow-sm" id="btn-open-new-task">
+        + Agregar
+      </button>
+    </div>
+  </header>
+
+  <div class="date-selector-container mb-4" id="date-selector">
   </div>
-</nav>
 
-<main id="lanhua-main-container" class="container flex-grow-1">
-  <div class="row g-4">
-    <aside class="col-12 col-lg-4 order-2 order-lg-1">
-      <div id="lanhua-form-card" class="card shadow-sm bg-card-custom rounded-3">
-        <div class="card-body p-4">
-          <h2 class="h5 fw-bold mb-3 text-warning">Programar Sesión</h2>
+  <main class="flex-grow-1 overflow-auto pb-5" id="lanhua-class-list">
+  </main>
+</div>
 
-          <div id="lanhua-form-alert" class="alert alert-danger d-none py-2 fs-6 border-0" role="alert">
-            <i class="fa-solid fa-triangle-exclamation me-1"></i> <span id="lanhua-alert-text">Revisa los campos requeridos.</span>
+<div class="modal fade" id="taskModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content text-white">
+
+      <div class="modal-header border-secondary border-opacity-25 pb-2">
+        <h5 class="modal-title fw-bold text-warning" id="modalTitle">Nueva Sesión</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <div id="lanhua-form-alert" class="alert alert-danger d-none py-2 fs-6 border-0" role="alert">
+          <i class="fa-solid fa-triangle-exclamation me-1"></i> <span id="lanhua-alert-text">Revisa los campos requeridos.</span>
+        </div>
+
+        <form id="lanhua-schedule-form">
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-white">Tipo de Práctica</label>
+            <select id="lanhua-discipline-select" class="form-select form-select-sm">
+              <option selected disabled value="">Seleccionar disciplina...</option>
+              <option value="wushu">Wushu</option>
+              <option value="sanda">Sanda</option>
+              <option value="taolu">Taolu</option>
+              <option value="taichi">Tai Chi</option>
+            </select>
           </div>
 
-          <form id="lanhua-schedule-form">
-            <div class="mb-3">
-              <label for="lanhua-discipline-select" class="form-label fw-semibold small">Tipo de Práctica</label>
-              <select id="lanhua-discipline-select" class="form-select form-select-sm">
-                <option selected disabled value="">Seleccionar disciplina...</option>
-                <option value="wushu">Wushu General</option>
-                <option value="sanda">Sanda</option>
-                <option value="taolu">Taolu</option>
-                <option value="taichi">Tai Chi</option>
-                <option value="Acondicionamiento">Acondicionamiento</option>
-              </select>
-            </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-white">Observaciones</label>
+            <textarea id="lanhua-notes-input" class="form-control form-control-sm text-white" rows="2" placeholder="Ingresa notas aquí..."></textarea>
+          </div>
 
-            <div class="mb-3">
-              <label for="lanhua-level-select" class="form-label fw-semibold small">Nivel</label>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-white">Fecha</label>
+            <input type="date" id="lanhua-date-input" class="form-control form-control-sm text-white">
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label fw-semibold small text-white">Hora Inicio</label>
+              <input type="time" id="lanhua-start-time" class="form-control form-control-sm text-white">
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold small text-white">Hora Fin</label>
+              <input type="time" id="lanhua-end-time" class="form-control form-control-sm text-white">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-white">Recordatorio</label>
+            <select id="lanhua-remind-select" class="form-select form-select-sm">
+              <option value="5">5 minutos antes</option>
+              <option value="10">10 minutos antes</option>
+              <option value="30">30 minutos antes</option>
+              <option value="60">1 hora antes</option>
+            </select>
+          </div>
+
+          <div class="row g-2 mb-4">
+            <div class="col-6">
+              <label class="form-label fw-semibold small text-white">Nivel</label>
               <select id="lanhua-level-select" class="form-select form-select-sm">
-                <option selected disabled value="">Seleccionar nivel...</option>
+                <option selected disabled value="">Nivel...</option>
                 <option value="beginner">Principiante</option>
                 <option value="intermediate">Intermedio</option>
                 <option value="advanced">Avanzado</option>
               </select>
             </div>
-
-            <div class="mb-3">
-              <label for="lanhua-location-select" class="form-label fw-semibold small">Sede / Ubicación</label>
+            <div class="col-6">
+              <label class="form-label fw-semibold small text-white">Sede</label>
               <select id="lanhua-location-select" class="form-select form-select-sm">
-                <option selected disabled value="">Seleccionar sede...</option>
-                <option value="laureles">Sede Principal - Laureles</option>
-                <option value="harunohinata">Sede Haru No Hinata</option>
-                <option value="poblado">Sede Monterrey Hayeshi</option>
+                <option selected disabled value="">Sede...</option>
+                <option value="laureles">Laureles</option>
+                <option value="harunohinata">Haru No Hinata</option>
+                <option value="poblado">Monterrey</option>
               </select>
             </div>
+          </div>
 
-            <div class="mb-3">
-              <label for="lanhua-date-input" class="form-label fw-semibold small">Fecha</label>
-              <input type="date" id="lanhua-date-input" class="form-control form-control-sm">
-            </div>
-
-            <div class="row g-2 mb-3">
-              <div class="col-6">
-                <label for="lanhua-start-time" class="form-label fw-semibold small">Hora Inicio</label>
-                <input type="time" id="lanhua-start-time" class="form-control form-control-sm">
-              </div>
-              <div class="col-6">
-                <label for="lanhua-end-time" class="form-label fw-semibold small">Hora Fin</label>
-                <input type="time" id="lanhua-end-time" class="form-control form-control-sm">
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <label for="lanhua-notes-input" class="form-label fw-semibold small">Observaciones</label>
-              <textarea id="lanhua-notes-input" class="form-control form-control-sm" rows="2" placeholder="Notas de la clase..."></textarea>
-            </div>
-
-            <div class="form-check form-switch mb-4 d-flex align-items-center gap-2">
-              <div class="form-check-label fw-semibold small text-light" for="lanhua-type-toggle">
-                <i class="fa-solid fa-user text-warning"></i> Personalizada
-              </div>
-              <input class="form-check-input mt-0 m-0" type="checkbox" role="switch" id="lanhua-type-toggle">
-              <label class="form-check-label fw-semibold small text-light" for="lanhua-type-toggle">
-                <i class="fa-solid fa-users text-warning"></i> Grupal
-              </label>
-            </div>
-
-            <button type="submit" id="lanhua-submit-btn" class="btn btn-warning w-100 fw-bold">
-              <i class="fa-solid fa-calendar-plus"></i> Agendar Sesión
-            </button>
-          </form>
-        </div>
+          <div class="form-check form-switch mb-4 d-flex align-items-center gap-2">
+            <div class="form-check-label fw-semibold small text-white">Personalizada</div>
+            <input class="form-check-input mt-0 m-0" type="checkbox" role="switch" id="lanhua-type-toggle">
+            <label class="form-check-label fw-semibold small text-white">Grupal</label>
+          </div>
+        </form>
       </div>
-    </aside>
 
-    <section class="col-12 col-lg-8 order-1 order-lg-2">
-      <header class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
-        <h2 class="h4 fw-bold m-0 text-warning">Agenda de Entrenamiento</h2>
-        <span id="lanhua-class-count" class="badge bg-warning text-dark rounded-pill">0 clases programadas</span>
-      </header>
-
-      <div id="lanhua-class-list" class="d-flex flex-column gap-3 overflow-auto" style="max-height: 80vh; padding-bottom: 2rem;">
+      <div class="modal-footer border-secondary border-opacity-25 d-flex gap-2">
+        <button type="button" class="btn btn-outline-danger flex-fill d-none" id="btn-delete-task">
+          Cancelar Clase
+        </button>
+        <button type="button" class="btn btn-warning flex-fill fw-bold" id="lanhua-submit-btn">
+          Crear Sesión
+        </button>
       </div>
-    </section>
+    </div>
   </div>
-</main>
+</div>
+
+<div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background-color: var(--bg-card); border: 1px solid #343a40;">
+      <div class="modal-header border-secondary border-opacity-25 pb-2">
+        <h5 class="modal-title fw-bold text-white">Opciones de Usuario</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body d-flex flex-column gap-3">
+        <button class="btn btn-outline-warning w-100 fw-bold d-flex align-items-center justify-content-center gap-2" id="btn-go-reserve">
+          <i class="fa-solid fa-globe"></i> Ir a ReserveOne
+        </button>
+        <button class="btn btn-outline-light w-100 fw-bold d-flex align-items-center justify-content-center gap-2" id="btn-toggle-theme">
+          <i class="fa-solid fa-circle-half-stroke"></i> Cambiar Modo (Claro/Oscuro)
+        </button>
+        <button class="btn btn-danger w-100 fw-bold d-flex align-items-center justify-content-center gap-2 mt-2" id="btn-logout">
+          <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="./js/taskManager.js"></script>

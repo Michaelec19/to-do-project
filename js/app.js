@@ -1,86 +1,153 @@
 const taskManager = new TaskManager();
 taskManager.load();
-taskManager.render();
+
+let selectedDate = new Date();
+let isEditing = false;
+let editingTaskId = null;
+
+const taskModalElement = document.getElementById('taskModal');
+const taskModal = new bootstrap.Modal(taskModalElement);
 
 const lanhuaScheduleForm = document.getElementById('lanhua-schedule-form');
 const lanhuaFormAlert = document.getElementById('lanhua-form-alert');
 const lanhuaAlertText = document.getElementById('lanhua-alert-text');
 const submitBtn = document.getElementById('lanhua-submit-btn');
+const deleteBtn = document.getElementById('btn-delete-task');
+const modalTitle = document.getElementById('modalTitle');
+const dateSelectorContainer = document.getElementById('date-selector');
+const headerFullDate = document.getElementById('header-full-date');
+const headerTodayText = document.getElementById('header-today-text');
 
-let isEditing = false;
-let editingTaskId = null;
-
-function validFormFieldInput(data) {
-  if (!data.discipline || data.discipline === "") return false;
-  if (!data.level || data.level === "") return false;
-  if (!data.location || data.location === "") return false;
-  if (!data.date || data.date === "") return false;
-  if (!data.startTime || data.startTime === "") return false;
-  if (!data.endTime || data.endTime === "") return false;
-  return true;
+function formatDateForInput(date) {
+  const d = new Date(date);
+  const month = '' + (d.getMonth() + 1);
+  const day = '' + d.getDate();
+  const year = d.getFullYear();
+  return [year, month.padStart(2, '0'), day.padStart(2, '0')].join('-');
 }
 
-function validateDate(dateStr, timeStr) {
-  const selectedDateTime = new Date(`${dateStr}T${timeStr}`);
-  const now = new Date();
-  return selectedDateTime >= now;
+function generateDateStrip() {
+  dateSelectorContainer.innerHTML = '';
+  const today = new Date();
+
+  for (let i = -15; i <= 15; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+
+    const dateStr = formatDateForInput(d);
+    const dayName = d.toLocaleDateString('es-ES', { weekday: 'short' }).toUpperCase();
+    const dayNumber = d.getDate();
+    const monthName = d.toLocaleDateString('es-ES', { month: 'short' });
+
+    const div = document.createElement('div');
+    div.className = `date-card ${dateStr === formatDateForInput(selectedDate) ? 'active' : ''}`;
+    div.innerHTML = `
+            <span class="small">${monthName}</span>
+            <span class="fs-4">${dayNumber}</span>
+            <span class="small">${dayName}</span>
+        `;
+
+    div.addEventListener('click', () => {
+      selectedDate = d;
+      updateHeaderAndStrip();
+      taskManager.render(formatDateForInput(selectedDate));
+    });
+
+    dateSelectorContainer.appendChild(div);
+  }
+
+  setTimeout(() => {
+    const activeCard = dateSelectorContainer.querySelector('.active');
+    if (activeCard) {
+      activeCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  }, 100);
 }
+
+function updateHeaderAndStrip() {
+  generateDateStrip();
+
+  const dayNameStr = selectedDate.toLocaleDateString('es-ES', { weekday: 'long' });
+  const dayNameCap = dayNameStr.charAt(0).toUpperCase() + dayNameStr.slice(1);
+  const dayNum = selectedDate.getDate();
+  const monthNameStr = selectedDate.toLocaleDateString('es-ES', { month: 'long' });
+  headerFullDate.textContent = `${dayNameCap} ${dayNum}, ${monthNameStr}`;
+
+  const today = new Date();
+  const isToday = today.toDateString() === selectedDate.toDateString();
+  headerTodayText.textContent = isToday ? "Hoy" : "Agenda";
+}
+
+document.getElementById('btn-open-new-task').addEventListener('click', () => {
+  isEditing = false;
+  editingTaskId = null;
+  lanhuaScheduleForm.reset();
+  document.getElementById('lanhua-date-input').value = formatDateForInput(selectedDate);
+
+  modalTitle.textContent = "Nueva Sesión";
+  submitBtn.textContent = "Crear Sesión";
+  deleteBtn.classList.add('d-none');
+  lanhuaFormAlert.classList.add('d-none');
+
+  taskModal.show();
+});
 
 window.loadTaskForEdit = function(taskId) {
   const task = taskManager.tasks.find(t => t.id === taskId);
   if (!task) return;
 
-  const disciplineSelect = document.getElementById('lanhua-discipline-select');
-  for (let i = 0; i < disciplineSelect.options.length; i++) {
-    if (disciplineSelect.options[i].text === task.discipline) {
-      disciplineSelect.selectedIndex = i;
-      break;
+  const setSelectByText = (id, text) => {
+    const select = document.getElementById(id);
+    for (let i = 0; i < select.options.length; i++) {
+      if (select.options[i].text === text) {
+        select.selectedIndex = i;
+        break;
+      }
     }
-  }
+  };
 
-  const levelSelect = document.getElementById('lanhua-level-select');
-  for (let i = 0; i < levelSelect.options.length; i++) {
-    if (levelSelect.options[i].text === task.level) {
-      levelSelect.selectedIndex = i;
-      break;
-    }
-  }
-
-  const locationSelect = document.getElementById('lanhua-location-select');
-  for (let i = 0; i < locationSelect.options.length; i++) {
-    if (locationSelect.options[i].text === task.location) {
-      locationSelect.selectedIndex = i;
-      break;
-    }
-  }
+  setSelectByText('lanhua-discipline-select', task.discipline);
+  setSelectByText('lanhua-level-select', task.level);
+  setSelectByText('lanhua-location-select', task.location);
 
   document.getElementById('lanhua-date-input').value = task.date;
   document.getElementById('lanhua-start-time').value = task.startTime;
   document.getElementById('lanhua-end-time').value = task.endTime;
   document.getElementById('lanhua-notes-input').value = task.notes;
-
-  const toggle = document.getElementById('lanhua-type-toggle');
-  toggle.checked = task.modality === "Grupal";
+  document.getElementById('lanhua-remind-select').value = task.remind || "5";
+  document.getElementById('lanhua-type-toggle').checked = (task.modality === "Grupal");
 
   isEditing = true;
   editingTaskId = taskId;
-  submitBtn.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Actualizar Sesión`;
+
+  modalTitle.textContent = "Editar Sesión";
+  submitBtn.textContent = "Actualizar";
+  deleteBtn.classList.remove('d-none');
+  lanhuaFormAlert.classList.add('d-none');
+
+  taskModal.show();
 };
 
-lanhuaScheduleForm.addEventListener('submit', (e) => {
+deleteBtn.addEventListener('click', () => {
+  if (editingTaskId !== null) {
+    taskManager.deleteTask(editingTaskId);
+    taskManager.render(formatDateForInput(selectedDate));
+    taskModal.hide();
+  }
+});
+
+submitBtn.addEventListener('click', (e) => {
   e.preventDefault();
 
   const disciplineSelect = document.getElementById('lanhua-discipline-select');
-  const disciplineText = disciplineSelect.options[disciplineSelect.selectedIndex].text;
-
   const levelSelect = document.getElementById('lanhua-level-select');
-  const levelText = levelSelect.options[levelSelect.selectedIndex].text;
-
   const locationSelect = document.getElementById('lanhua-location-select');
-  const locationText = locationSelect.options[locationSelect.selectedIndex].text;
 
-  const isCustomOrGroup = document.getElementById('lanhua-type-toggle').checked;
-  const modalityText = isCustomOrGroup ? "Grupal" : "Personalizada";
+  const disciplineText = disciplineSelect.options[disciplineSelect.selectedIndex]?.text || '';
+  const levelText = levelSelect.options[levelSelect.selectedIndex]?.text || '';
+  const locationText = locationSelect.options[locationSelect.selectedIndex]?.text || '';
+  const modalityText = document.getElementById('lanhua-type-toggle').checked ? "Grupal" : "Personalizada";
+  const remindValue = document.getElementById('lanhua-remind-select').value;
 
   const validationData = {
     discipline: disciplineSelect.value,
@@ -91,7 +158,7 @@ lanhuaScheduleForm.addEventListener('submit', (e) => {
     endTime: document.getElementById('lanhua-end-time').value
   };
 
-  if (!validFormFieldInput(validationData)) {
+  if (!validationData.discipline || !validationData.level || !validationData.location || !validationData.date || !validationData.startTime || !validationData.endTime) {
     lanhuaAlertText.textContent = "Por favor completa todos los campos requeridos.";
     lanhuaFormAlert.classList.remove('d-none');
     return;
@@ -103,42 +170,54 @@ lanhuaScheduleForm.addEventListener('submit', (e) => {
     return;
   }
 
-  if (!validateDate(validationData.date, validationData.startTime)) {
-    lanhuaAlertText.textContent = "No se puede programar una clase en una fecha u hora pasada.";
-    lanhuaFormAlert.classList.remove('d-none');
-    return;
-  }
-
   lanhuaFormAlert.classList.add('d-none');
 
   if (isEditing) {
     taskManager.updateTask(
-        editingTaskId,
-        disciplineText,
-        levelText,
-        locationText,
-        validationData.date,
-        validationData.startTime,
-        validationData.endTime,
-        document.getElementById('lanhua-notes-input').value,
-        modalityText
+        editingTaskId, disciplineText, levelText, locationText,
+        validationData.date, validationData.startTime, validationData.endTime,
+        document.getElementById('lanhua-notes-input').value, modalityText, remindValue
     );
-    isEditing = false;
-    editingTaskId = null;
-    submitBtn.innerHTML = `<i class="fa-solid fa-calendar-plus"></i> Agendar Sesión`;
   } else {
     taskManager.addTask(
-        disciplineText,
-        levelText,
-        locationText,
-        validationData.date,
-        validationData.startTime,
-        validationData.endTime,
-        document.getElementById('lanhua-notes-input').value,
-        modalityText
+        disciplineText, levelText, locationText,
+        validationData.date, validationData.startTime, validationData.endTime,
+        document.getElementById('lanhua-notes-input').value, modalityText, remindValue
     );
   }
 
-  taskManager.render();
-  lanhuaScheduleForm.reset();
+  selectedDate = new Date(validationData.date + "T00:00:00");
+  updateHeaderAndStrip();
+  taskManager.render(formatDateForInput(selectedDate));
+
+  taskModal.hide();
 });
+
+updateHeaderAndStrip();
+taskManager.render(formatDateForInput(selectedDate));
+
+const session = JSON.parse(localStorage.getItem('lanhua_session'));
+if (!session) {
+  window.location.href = 'login.html';
+} else {
+  document.getElementById('user-name-display').textContent = session.nombre;
+}
+
+document.getElementById('btn-logout').addEventListener('click', () => {
+  localStorage.removeItem('lanhua_session');
+  window.location.href = 'login.html';
+});
+
+document.getElementById('btn-go-reserve').addEventListener('click', () => {
+  alert('Redirigiendo a ReserveOne principal... (Próximamente)');
+});
+
+document.getElementById('btn-toggle-theme').addEventListener('click', () => {
+  document.body.classList.toggle('light-mode');
+  const isLight = document.body.classList.contains('light-mode');
+  localStorage.setItem('lanhua_theme', isLight ? 'light' : 'dark');
+});
+
+if (localStorage.getItem('lanhua_theme') === 'light') {
+  document.body.classList.add('light-mode');
+}
