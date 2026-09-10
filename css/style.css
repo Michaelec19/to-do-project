@@ -1,75 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
 :root {
-  --lanhua-red: #BF2A37;
-  --lanhua-yellow: #F2BE22;
-  --lanhua-orange: #F29B30;
-  --lanhua-gray-light: #E3E3E3;
-  --lanhua-black: #0D0D0D;
+  --secondary-color: #ffc107;
 }
 
 body {
-  background-color: #F8F9FA;
-  color: var(--lanhua-black);
-  font-family: sans-serif;
+  font-family: 'Inter', sans-serif;
+  background-color: #f8f9fa;
+  color: #f8f9fa;
 }
 
-#lanhua-navbar {
-  background-color: var(--lanhua-black) !important;
-  border-bottom: 3px solid var(--lanhua-yellow);
+
+.bg-card-custom {
+  background-color: #1a1d20 !important;
+  border: 1px solid var(--secondary-color) !important;
 }
 
-#lanhua-alert {
-  background-color: #FFF9E6;
-  border: 1px solid var(--lanhua-yellow);
-  color: var(--lanhua-black);
+.form-control, .form-select {
+  background-color: #2b3035;
+  border-color: #495057;
+  color: #f8f9fa;
 }
 
-#lanhua-form-card {
-  background-color: #FFFFFF;
-  border-radius: 8px;
-}
-
-#lanhua-submit-btn {
-  background-color: var(--lanhua-red);
-  color: white;
-  transition: background-color 0.2s ease;
-}
-
-#lanhua-submit-btn:hover {
-  background-color: #9e212c;
-  color: white;
+.form-control:focus, .form-select:focus {
+  background-color: #2b3035;
+  color: #f8f9fa;
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
 }
 
 .lanhua-task-card {
-  background-color: var(--lanhua-gray-light);
-  border-radius: 8px;
-  border-left: 5px solid transparent !important;
+  background-color: #212529;
+  border: 1px solid #343a40;
+  border-left: 4px solid var(--secondary-color) !important;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  color: #f8f9fa;
 }
 
-.lanhua-checkbox {
+.lanhua-task-card:hover {
+  transform: translateX(5px);
+  background-color: #2b3035;
+}
+
+.lanhua-task-card.conflict-card {
+  background-color: #4a1919 !important;
+  border-left: 4px solid #dc3545 !important;
+}
+
+.lanhua-task-card.conflict-card:hover {
+  background-color: #5c1f1f !important;
+}
+
+.lanhua-task-card .text-muted {
+  color: #adb5bd !important;
+}
+
+.form-check-input {
   width: 1.5rem;
   height: 1.5rem;
-  border: 2px solid var(--lanhua-black);
-  border-radius: 50% !important;
   cursor: pointer;
 }
 
-.lanhua-checkbox:checked {
-  background-color: var(--lanhua-orange);
-  border-color: var(--lanhua-orange);
+.form-check-input:checked {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
 }
 
-.lanhua-time-badge {
-  background-color: var(--lanhua-yellow);
-  color: var(--lanhua-black);
-}
-
-.lanhua-btn-primary {
-  background-color: var(--lanhua-orange);
-  color: white;
-  border: none;
-}
-
-.lanhua-btn-primary:hover {
-  background-color: #d98a2a;
-  color: white;
+#lanhua-schedule-form .form-label {
+  color: #f8f9fa !important;
 }
