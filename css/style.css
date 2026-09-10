@@ -1,75 +1,220 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
 :root {
-  --lanhua-red: #BF2A37;
-  --lanhua-yellow: #F2BE22;
-  --lanhua-orange: #F29B30;
-  --lanhua-gray-light: #E3E3E3;
-  --lanhua-black: #0D0D0D;
+  --secondary-color: #ffc107;
+  --bg-dark: #212529;
+  --bg-card: #1a1d20;
 }
 
 body {
-  background-color: #F8F9FA;
-  color: var(--lanhua-black);
-  font-family: sans-serif;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-dark);
+  color: #f8f9fa;
+  -webkit-font-smoothing: antialiased;
 }
 
-#lanhua-navbar {
-  background-color: var(--lanhua-black) !important;
-  border-bottom: 3px solid var(--lanhua-yellow);
+.mobile-wrapper {
+  max-width: 480px;
+  margin: 0 auto;
+  background-color: var(--bg-dark);
+  min-height: 100vh;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
-#lanhua-alert {
-  background-color: #FFF9E6;
-  border: 1px solid var(--lanhua-yellow);
-  color: var(--lanhua-black);
+.date-selector-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 12px;
+  padding-bottom: 10px;
+  scrollbar-width: none;
+}
+.date-selector-container::-webkit-scrollbar {
+  display: none;
 }
 
-#lanhua-form-card {
-  background-color: #FFFFFF;
-  border-radius: 8px;
+.date-card {
+  min-width: 65px;
+  height: 85px;
+  border-radius: 16px;
+  background-color: var(--bg-card);
+  border: 1px solid #343a40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #adb5bd;
 }
 
-#lanhua-submit-btn {
-  background-color: var(--lanhua-red);
-  color: white;
-  transition: background-color 0.2s ease;
-}
-
-#lanhua-submit-btn:hover {
-  background-color: #9e212c;
-  color: white;
+.date-card.active {
+  background-color: var(--secondary-color);
+  color: #000;
+  border-color: var(--secondary-color);
+  font-weight: bold;
 }
 
 .lanhua-task-card {
-  background-color: var(--lanhua-gray-light);
-  border-radius: 8px;
-  border-left: 5px solid transparent !important;
+  background-color: var(--bg-card);
+  border: none;
+  border-left: 5px solid var(--secondary-color) !important;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
 }
 
-.lanhua-checkbox {
+.lanhua-task-card:active {
+  transform: scale(0.98);
+}
+
+.lanhua-task-card.conflict-card {
+  background-color: #dc3545 !important;
+  border-left: 5px solid var(--secondary-color) !important;
+}
+
+.form-control, .form-select {
+  background-color: #2b3035;
+  border-color: #495057;
+  color: #f8f9fa;
+  border-radius: 10px;
+}
+
+.form-control:focus, .form-select:focus {
+  background-color: #2b3035;
+  color: #f8f9fa;
+  border-color: var(--secondary-color);
+  box-shadow: none;
+}
+
+.modal-content {
+  background-color: var(--bg-card);
+  border: 1px solid #343a40;
+  border-radius: 20px;
+}
+
+.form-check-input {
   width: 1.5rem;
   height: 1.5rem;
-  border: 2px solid var(--lanhua-black);
-  border-radius: 50% !important;
   cursor: pointer;
 }
 
-.lanhua-checkbox:checked {
-  background-color: var(--lanhua-orange);
-  border-color: var(--lanhua-orange);
+.form-check-input:checked {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
 }
 
-.lanhua-time-badge {
-  background-color: var(--lanhua-yellow);
-  color: var(--lanhua-black);
+.text-done-light {
+  color: #dee2e6 !important;
+  text-decoration: line-through;
 }
 
-.lanhua-btn-primary {
-  background-color: var(--lanhua-orange);
-  color: white;
+body.light-mode {
+  --bg-dark: #f8f9fa;
+  --bg-card: #ffffff;
+}
+
+body.light-mode .text-done-light {
+  color: #6c757d !important;
+}
+
+body.light-mode .text-white {
+  color: #212529 !important;
+}
+
+body.light-mode .btn-close-white {
+  filter: invert(1) grayscale(100%) brightness(0);
+}
+
+body.light-mode .lanhua-task-card {
+  border: 1px solid #dee2e6;
+}
+
+body.light-mode .form-control,
+body.light-mode .form-select {
+  background-color: #ffffff;
+  border-color: #ced4da;
+  color: #212529 !important;
+}
+
+body.light-mode .title-app-login {
+  color: #212529 !important;
+}
+
+body.light-mode #btnLoginThemeToggle {
+  color: #212529 !important;
+  border-color: #212529 !important;
+}
+
+body.light-mode #btnLoginThemeToggle:hover {
+  background-color: #212529 !important;
+  color: #ffffff !important;
+}
+
+.auth-tabs .nav-link {
+  color: #adb5bd !important;
+  background-color: transparent !important;
+  border-radius: 0 !important;
+  border-bottom: 2px solid transparent !important;
+  transition: all 0.3s ease;
+  padding-bottom: 10px;
+}
+
+.auth-tabs .nav-link:hover {
+  color: #f2be22 !important;
+}
+
+.auth-tabs .nav-link.active {
+  color: #f2be22 !important;
+  border-bottom: 2px solid #f2be22 !important;
+  background-color: transparent !important;
+}
+
+#loginForm button[type="submit"],
+#registerForm button[type="submit"] {
+  background-color: #f2be22 !important;
+  color: #0d0d0d !important;
+  border: none !important;
+  transition: background-color 0.2s ease;
+}
+
+#loginForm button[type="submit"]:hover,
+#registerForm button[type="submit"]:hover {
+  background-color: #d9aa1e !important;
+  color: #0d0d0d !important;
+}
+
+.mobile-wrapper {
+  position: relative;
+}
+
+.floating-theme-btn {
+  position: fixed !important;
+  bottom: 25px;
+  right: 25px;
+  width: 50px;
+  height: 50px;
+  z-index: 1050;
   border: none;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
-.lanhua-btn-primary:hover {
-  background-color: #d98a2a;
-  color: white;
+.floating-theme-btn:active {
+  transform: scale(0.90);
+}
+
+body.light-mode .floating-theme-btn {
+  background-color: #212529 !important;
+  color: #ffc107 !important;
+}
+
+body.light-mode #btn-edit-profile {
+  color: #212529 !important;
+  border-color: #212529 !important;
+}
+
+body.light-mode #btn-edit-profile:hover {
+  background-color: #212529 !important;
+  color: #ffffff !important;
 }
