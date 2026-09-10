@@ -68,8 +68,8 @@ body {
 }
 
 .lanhua-task-card.conflict-card {
-  background-color: #4a1919 !important;
-  border-left: 5px solid #dc3545 !important;
+  background-color: #dc3545 !important;
+  border-left: 5px solid var(--secondary-color) !important;
 }
 
 .form-control, .form-select {
@@ -104,13 +104,17 @@ body {
 }
 
 .text-done-light {
-  color: #212529 !important;
+  color: #dee2e6 !important;
   text-decoration: line-through;
 }
 
 body.light-mode {
   --bg-dark: #f8f9fa;
   --bg-card: #ffffff;
+}
+
+body.light-mode .text-done-light {
+  color: #6c757d !important;
 }
 
 body.light-mode .text-white {
@@ -177,4 +181,40 @@ body.light-mode #btnLoginThemeToggle:hover {
 #registerForm button[type="submit"]:hover {
   background-color: #d9aa1e !important;
   color: #0d0d0d !important;
+}
+
+.mobile-wrapper {
+  position: relative;
+}
+
+.floating-theme-btn {
+  position: fixed !important;
+  bottom: 25px;
+  right: 25px;
+  width: 50px;
+  height: 50px;
+  z-index: 1050;
+  border: none;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.floating-theme-btn:active {
+  transform: scale(0.90);
+}
+
+body.light-mode .floating-theme-btn {
+  background-color: #212529 !important;
+  color: #ffc107 !important;
+}
+
+body.light-mode #btn-edit-profile {
+  color: #212529 !important;
+  border-color: #212529 !important;
+}
+
+body.light-mode #btn-edit-profile:hover {
+  background-color: #212529 !important;
+  color: #ffffff !important;
 }

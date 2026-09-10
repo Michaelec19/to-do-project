@@ -212,12 +212,99 @@ document.getElementById('btn-go-reserve').addEventListener('click', () => {
   alert('Redirigiendo a ReserveOne principal... (Próximamente)');
 });
 
-document.getElementById('btn-toggle-theme').addEventListener('click', () => {
+if (localStorage.getItem('lanhua_theme') === 'light') {
+  document.body.classList.add('light-mode');
+}
+
+document.getElementById('floatingThemeToggle')?.addEventListener('click', () => {
   document.body.classList.toggle('light-mode');
   const isLight = document.body.classList.contains('light-mode');
   localStorage.setItem('lanhua_theme', isLight ? 'light' : 'dark');
 });
 
-if (localStorage.getItem('lanhua_theme') === 'light') {
-  document.body.classList.add('light-mode');
-}
+const profileModalElement = document.getElementById('profileModal');
+const profileModal = new bootstrap.Modal(profileModalElement);
+const settingsModalElement = document.getElementById('settingsModal');
+
+document.getElementById('btn-edit-profile').addEventListener('click', () => {
+  const settingsModalInstance = bootstrap.Modal.getInstance(settingsModalElement) || new bootstrap.Modal(settingsModalElement);
+  settingsModalInstance.hide();
+
+  const session = JSON.parse(localStorage.getItem('lanhua_session'));
+  const users = JSON.parse(localStorage.getItem('lanhua_users')) || [];
+  const currentUser = users.find(u => u.id === session.id) || session;
+
+  document.getElementById('profileNombre').value = currentUser.nombre || '';
+  document.getElementById('profileApellido').value = currentUser.apellido || '';
+  document.getElementById('profileEmail').value = currentUser.email || '';
+  document.getElementById('profileCurrentPassword').value = ''; // Limpiar campo
+  document.getElementById('profilePassword').value = ''; // Limpiar campo
+
+  profileModal.show();
+});
+
+document.getElementById('profileForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const session = JSON.parse(localStorage.getItem('lanhua_session'));
+  let users = JSON.parse(localStorage.getItem('lanhua_users')) || [];
+
+  const profileAlert = document.getElementById('profile-form-alert');
+  const profileAlertText = document.getElementById('profile-alert-text');
+
+  const newNombre = document.getElementById('profileNombre').value.trim();
+  const newApellido = document.getElementById('profileApellido').value.trim();
+  const newEmail = document.getElementById('profileEmail').value.trim().toLowerCase();
+  const currentPasswordInput = document.getElementById('profileCurrentPassword').value;
+  const newPassword = document.getElementById('profilePassword').value;
+
+  profileAlert.classList.add('d-none');
+
+  if (users.some(u => u.email === newEmail && u.id !== session.id)) {
+    profileAlertText.textContent = "Este correo electrónico ya pertenece a otra cuenta.";
+    profileAlert.classList.remove('d-none');
+    return;
+  }
+
+  const userInDb = users.find(u => u.id === session.id);
+  let finalPassword = userInDb ? userInDb.password : session.password;
+
+  if (newPassword) {
+    if (!currentPasswordInput) {
+      profileAlertText.textContent = "Ingresa tu contraseña actual para cambiarla.";
+      profileAlert.classList.remove('d-none');
+      return;
+    }
+
+    if (!userInDb || userInDb.password !== currentPasswordInput) {
+      profileAlertText.textContent = "La contraseña actual es incorrecta.";
+      profileAlert.classList.remove('d-none');
+      return;
+    }
+
+    finalPassword = newPassword;
+  }
+
+  users = users.map(u => {
+    if (u.id === session.id) {
+      return { ...u, nombre: newNombre, apellido: newApellido, email: newEmail, password: finalPassword };
+    }
+    return u;
+  });
+  localStorage.setItem('lanhua_users', JSON.stringify(users));
+
+  const updatedSession = { ...session, nombre: newNombre, apellido: newApellido, email: newEmail };
+  localStorage.setItem('lanhua_session', JSON.stringify(updatedSession));
+
+  document.getElementById('user-name-display').textContent = newNombre;
+
+  profileModal.hide();
+  Swal.fire({
+    icon: 'success',
+    title: '¡Perfil actualizado!',
+    text: 'Tus datos se han guardado correctamente.',
+    confirmButtonColor: '#ffc107',
+    background: '#212529',
+    color: '#fff'
+  });
+});
