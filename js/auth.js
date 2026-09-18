@@ -1,12 +1,10 @@
-const USERS_KEY = 'lanhua_users';
+const API_URL = 'http://localhost:8080/api/auth';
 const SESSION_KEY = 'lanhua_session';
+const TOKEN_KEY = 'lanhua_token';
 
-const getUsers = () => JSON.parse(localStorage.getItem(USERS_KEY)) || [];
-const saveUsers = (users) => localStorage.setItem(USERS_KEY, JSON.stringify(users));
-
-const setSession = (user) => {
-    const { password, ...safeUser } = user;
-    localStorage.setItem(SESSION_KEY, JSON.stringify(safeUser));
+const setSession = (user, token) => {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+    localStorage.setItem(TOKEN_KEY, token);
 };
 
 document.getElementById('btnLoginThemeToggle')?.addEventListener('click', () => {
@@ -38,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetId = this.getAttribute('data-target');
             const inputElement = document.getElementById(targetId);
             const icon = this.querySelector('i');
-
             if (inputElement.type === 'password') {
                 inputElement.type = 'text';
                 icon.classList.replace('fa-eye', 'fa-eye-slash');
@@ -51,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginCorreo').value.trim().toLowerCase();
             const password = document.getElementById('loginPassword').value;
@@ -61,62 +58,46 @@ document.addEventListener('DOMContentLoaded', () => {
             spinner.classList.remove('d-none');
             btn.disabled = true;
 
-            setTimeout(() => {
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (!response.ok) throw new Error('Credenciales incorrectas');
+
+                const data = await response.json();
+                setSession(data.user, data.token);
+                window.location.href = 'index.html';
+
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Credenciales incorrectas',
+                    text: 'El correo o contraseña no coinciden en la base de datos.',
+                    confirmButtonColor: '#ffc107',
+                    background: '#212529',
+                    color: '#fff'
+                });
+            } finally {
                 spinner.classList.add('d-none');
                 btn.disabled = false;
-
-                const users = getUsers();
-                const foundUser = users.find(u => u.email === email && u.password === password);
-
-                if (!foundUser) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Credenciales incorrectas',
-                        text: 'El correo o contraseña no coinciden.',
-                        confirmButtonColor: '#ffc107',
-                        background: '#212529',
-                        color: '#fff'
-                    });
-                    return;
-                }
-
-                setSession(foundUser);
-                window.location.href = 'index.html'; // Redirige a la Agenda
-            }, 1000);
+            }
         });
     }
 
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
-        registerForm.addEventListener('submit', (e) => {
+        registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const nombre = document.getElementById('regNombre').value.trim();
             const apellido = document.getElementById('regApellido').value.trim();
-            const correo = document.getElementById('regCorreo').value.trim().toLowerCase();
+            const email = document.getElementById('regCorreo').value.trim().toLowerCase();
             const password = document.getElementById('regPassword').value;
 
             if (password.length < 6) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Contraseña muy corta',
-                    text: 'Mínimo 6 caracteres requeridos.',
-                    confirmButtonColor: '#ffc107',
-                    background: '#212529',
-                    color: '#fff'
-                });
-                return;
-            }
-
-            const users = getUsers();
-            if (users.some(u => u.email === correo)) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Correo ya registrado',
-                    text: 'Intenta iniciar sesión.',
-                    confirmButtonColor: '#ffc107',
-                    background: '#212529',
-                    color: '#fff'
-                });
+                Swal.fire({ icon: 'warning', title: 'Contraseña muy corta', text: 'Mínimo 6 caracteres requeridos.', confirmButtonColor: '#ffc107', background: '#212529', color: '#fff' });
                 return;
             }
 
@@ -125,21 +106,14 @@ document.addEventListener('DOMContentLoaded', () => {
             spinner.classList.remove('d-none');
             btn.disabled = true;
 
-            setTimeout(() => {
-                spinner.classList.add('d-none');
-                btn.disabled = false;
+            try {
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre, apellido, email, password })
+                });
 
-                const newUser = {
-                    id: Date.now().toString(),
-                    nombre,
-                    apellido,
-                    email: correo,
-                    password,
-                    role: 'trainer'
-                };
-
-                users.push(newUser);
-                saveUsers(users);
+                if (!response.ok) throw new Error('Error al registrar. Verifica si el correo ya existe.');
 
                 Swal.fire({
                     icon: 'success',
@@ -152,7 +126,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     registerForm.reset();
                     document.getElementById('login-tab').click();
                 });
-            }, 1000);
+
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de registro',
+                    text: error.message,
+                    confirmButtonColor: '#ffc107',
+                    background: '#212529',
+                    color: '#fff'
+                });
+            } finally {
+                spinner.classList.add('d-none');
+                btn.disabled = false;
+            }
         });
     }
 });

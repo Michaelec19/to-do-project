@@ -151,9 +151,6 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body d-flex flex-column gap-3">
-        <button class="btn btn-outline-light w-100 fw-bold d-flex align-items-center justify-content-center gap-2" id="btn-edit-profile">
-          <i class="fa-solid fa-user-pen"></i> Editar Perfil
-        </button>
         <button class="btn btn-outline-warning w-100 fw-bold d-flex align-items-center justify-content-center gap-2" id="btn-go-reserve">
           <i class="fa-solid fa-globe"></i> Ir a ReserveOne
         </button>
@@ -168,44 +165,12 @@
   <div id="profile-form-alert" class="alert alert-danger d-none py-2 fs-6 border-0 mb-3" role="alert">
     <i class="fa-solid fa-triangle-exclamation me-1"></i> <span id="profile-alert-text">Error</span>
   </div>
-  <div class="mb-3">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" style="background-color: var(--bg-card); border: 1px solid #343a40;">
-      <div class="modal-header border-secondary border-opacity-25 pb-2">
-        <h5 class="modal-title fw-bold text-white">Editar Perfil</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="profileForm">
-          <div class="mb-3">
-            <label class="form-label fw-semibold small text-white">Nombre</label>
-            <input type="text" class="form-control form-control-sm text-white" id="profileNombre" required />
-          </div>
-          <div class="mb-3">
-            <label class="form-label fw-semibold small text-white">Apellido</label>
-            <input type="text" class="form-control form-control-sm text-white" id="profileApellido" required />
-          </div>
-          <div class="mb-3">
-            <label class="form-label fw-semibold small text-white">Correo Electrónico</label>
-            <input type="email" class="form-control form-control-sm text-white" id="profileEmail" required />
-          </div>
-          <div class="mb-3">
-            <label class="form-label fw-semibold small text-white">Contraseña Actual</label>
-            <input type="password" class="form-control form-control-sm text-white" id="profileCurrentPassword" placeholder="Requerida solo si vas a cambiar contraseña" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label fw-semibold small text-white">Nueva Contraseña (Opcional)</label>
-            <input type="password" class="form-control form-control-sm text-white" id="profilePassword" placeholder="Dejar en blanco para no cambiar" />
-          </div>
-          <button type="submit" class="btn btn-warning w-100 fw-bold mt-2">Guardar Cambios</button>
-        </form>
-      </div>
-    </div>
-  </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="./js/taskManager.js"></script>
-<script src="./js/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="./js/taskManager.js"></script>
+  <script src="./js/app.js"></script>
 </body>
 </html>
