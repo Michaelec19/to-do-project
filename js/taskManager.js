@@ -1,7 +1,7 @@
 class TaskManager {
     constructor() {
         this.tasks = [];
-        this.API_URL = 'http://localhost:8080/api/sessions';
+        this.API_URL = 'https://to-do-agenda.onrender.com/api/sessions';
     }
 
     getHeaders() {
